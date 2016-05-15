@@ -8,7 +8,7 @@
 -- Script to simulate class and inheritance in Lua
 -- Version 2.1 - 2016/05/14
 
-local class
+local class = {}
 
 function class.new(name)
   local new_class = {}
@@ -60,7 +60,7 @@ function class.new(name)
   function new_class:is_a(someClass)
     local cur_class = new_class
     while cur_class ~= nil do
-      if cur_class == someClass then return true
+      if cur_class:name() == someClass:name() then return true
       else cur_class = cur_class:superClass() end
     end
     return false
@@ -70,7 +70,7 @@ function class.new(name)
 end
 
 function class.extends(baseClass,name)
-  local new_class = class_new(name)
+  local new_class = class.new(name)
   if baseClass~=nil then 
     setmetatable(new_class,{__index=baseClass})
     function new_class:superClass()
