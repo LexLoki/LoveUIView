@@ -1,6 +1,10 @@
 local path = (...):match("(.-)[^%.]+$")
 local ImageView = require (path.."class").extends(require (path.."View"),"ImageView")
 
+------------------------------------------
+-- Public functions
+------------------------------------------
+
 function ImageView.new(x,y,width,height)
   local self = ImageView.newObject(x,y,width,height)
   self.image = nil

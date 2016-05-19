@@ -1,5 +1,9 @@
 local path = (...):match("(.-)[^%.]+$")
-local Button = require (path.."class").extends(require (path.."ImageView"),"ImageView")
+local Button = require (path.."class").extends(require (path.."ImageView"),"Button")
+
+------------------------------------------
+-- Public functions
+------------------------------------------
 
 function Button.new(x,y,width,height)
   local self = Button.newObject(x,y,width,height)

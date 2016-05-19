@@ -1,5 +1,11 @@
 local View = require ((...):match("(.-)[^%.]+$").."class").new("View")
 
+local subViewWithPoint
+
+------------------------------------------
+-- Public functions
+------------------------------------------
+
 function View.new(x,y,width,height)
   local self = View.newObject()
   self.x = x
@@ -8,7 +14,7 @@ function View.new(x,y,width,height)
   self.height = height
   self.subViews = {}
   self.backgroundColor = {255,255,255}
-  self.borderColor = {255,255,255,0}
+  self.borderColor = {0,0,0}
   self.borderRadius = {0,0}
   self.interactionEnabled = true
   return self
@@ -33,7 +39,7 @@ function View:mousepressed(x,y,b)
 end
 
 function View:sub_mousepressed(x,y,b)
-  local v = self:subViewWithPoint(x,y)
+  local v = subViewWithPoint(self,x,y)
   if v ~= nil then
     v:mousepressed(x-v.x,y-v.y,b)
     return true
@@ -46,7 +52,7 @@ function View:mousemoved(x,y,dx,dy)
 end
 
 function View:sub_mousemoved(x,y,dx,dy)
-  local v = self:subViewWithPoint(x,y)
+  local v = subViewWithPoint(self,x,y)
   if v ~= nil then
     v:mousemoved(x-v.x,y-v.y,dx,dy)
     return true
@@ -59,12 +65,17 @@ function View:mousereleased(x,y,b)
 end
 
 function View:sub_mousereleased(x,y,b)
-  local v = self:subViewWithPoint(x,y)
+  local v = subViewWithPoint(self,x,y)
   if v ~= nil then
     v:mousereleased(x-v.x,y-v.y,b)
     return true
   end
   return false
+end
+
+function View:setCenter(x,y)
+  self.x = x-self.width/2
+  self.y = y-self.height/2
 end
 
 function View:wheelmoved(dx,dy,x,y)
@@ -75,12 +86,16 @@ function View:sub_wheelmoved(dx,dy,x,y)
   if x == nil then
     x,y = love.mouse.getPosition()
   end
-  local v = self:subViewWithPoint(x,y)
+  local v = subViewWithPoint(self,x,y)
   if v ~= nil then
     v:wheelmoved(dx,dy,x,y)
     return true
   end
   return false
+end
+
+function View:keypressed(key)
+  for i,v in pairs(self.subViews) do v:keypressed(key) end
 end
 
 function View:addSubView(view)
@@ -120,7 +135,18 @@ function View:pos_draw()
   love.graphics.pop()
 end
 
-function View:subViewWithPoint(x,y)
+function View:containsPoint(x,y)
+  return self.x<x and x<self.x+self.width and self.y<y and y<self.y+self.height
+end
+
+function View:convertPoint(x,y)
+  return x-self.x,y-self.y
+end
+
+------------------------------------------
+-- Private functions
+------------------------------------------
+subViewWithPoint = function(self,x,y)
   local resp = nil
   for i,v in ipairs(self.subViews) do
     if v:containsPoint(x,y) then 
@@ -128,14 +154,6 @@ function View:subViewWithPoint(x,y)
     else v:clearMouse() end
   end
   return resp
-end
-
-function View:containsPoint(x,y)
-  return self.x<x and x<self.x+self.width and self.y<y and y<self.y+self.height
-end
-
-function View:convertPoint(x,y)
-  return x-self.x,y-self.y
 end
 
 return View

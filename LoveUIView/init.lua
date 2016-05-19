@@ -5,7 +5,8 @@ local classes = {
 	'Button',
 	'ImageView',
 	'Screen',
-	'TextField'
+	'TextField',
+	'ListView'
 }
 
 local LoveUIView = {

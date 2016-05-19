@@ -71,7 +71,7 @@ end
 
 function class.extends(baseClass,name)
   local new_class = class.new(name)
-  if baseClass~=nil then 
+  if baseClass~=nil then
     setmetatable(new_class,{__index=baseClass})
     function new_class:superClass()
       return baseClass
