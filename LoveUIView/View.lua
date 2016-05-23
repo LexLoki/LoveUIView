@@ -15,12 +15,15 @@ function View.new(x,y,width,height)
   self.subViews = {}
   self.backgroundColor = {255,255,255}
   self.borderColor = {0,0,0}
+  self.borderWidth = 1
   self.borderRadius = {0,0}
+  self.mouse_over = false
   self.interactionEnabled = true
   return self
 end
 
 function View:update(dt)
+  for _,v in pairs(self.subViews) do v:update(dt) end
 end
 
 function View:setInteraction(set)
@@ -31,6 +34,7 @@ function View:setInteraction(set)
 end
 
 function View:clearMouse()
+  self.mouse_over = false
   for i,v in pairs(self.subViews) do v:clearMouse() end
 end
 
@@ -103,10 +107,24 @@ function View:addSubView(view)
   view.parent = self
 end
 
+function View:bringToFront()
+  if self.parent then
+    local subs = self.parent.subViews
+    for i,v in pairs(subs) do
+      if v==self then
+        table.insert(subs,table.remove(subs,i))
+        break
+      end
+    end
+  end
+end
+
 function View:removeFromSuperView()
   if self.parent ~= nil then
-    for i,v in pairs(self.parent.subViews) do
-      if v==self then table.remove(self.parent.subViews,i) break end end
+    local p = self.parent
+    self.parent = nil
+    for i,v in pairs(p.subViews) do
+      if v==self then table.remove(p.subViews,i) break end end
   end
 end
 
@@ -125,11 +143,12 @@ function View:during_draw()
   love.graphics.setColor(self.backgroundColor)
   love.graphics.rectangle("fill",0,0,self.width,self.height,self.borderRadius[1],self.borderRadius[2])
   love.graphics.setColor(255,255,255)
+  for i,v in ipairs(self.subViews) do v:draw() end
 end
 
 function View:pos_draw()
-  for i,v in ipairs(self.subViews) do v:draw() end
   love.graphics.setColor(self.borderColor)
+  love.graphics.setLineWidth(self.borderWidth)
   love.graphics.rectangle("line",0,0,self.width,self.height)
   love.graphics.setColor(255,255,255)
   love.graphics.pop()
@@ -147,6 +166,7 @@ end
 -- Private functions
 ------------------------------------------
 subViewWithPoint = function(self,x,y)
+  self.mouse_over = true
   local resp = nil
   for i,v in ipairs(self.subViews) do
     if v:containsPoint(x,y) then 

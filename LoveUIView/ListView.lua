@@ -13,6 +13,7 @@ function ListView.new(x,y,width,height,scrollDirection)
 	local self = ListView.newObject(x,y,width,height)
 	self.scrollDirection = ListView.Direction[scrollDirection]
 	self.isDragging = false
+	self.delegate = nil
 	return self
 end
 
