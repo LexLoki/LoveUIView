@@ -20,6 +20,15 @@ function class.new(name)
       meta.__index = new_class
     else
       newinst.super = sup.new(...)
+      --[[ Experiment
+      newinst.__super = sup.new(...)
+      newinst.super = {}
+      setmetatable(newinst.super,{__index=function(table,key)
+
+      })
+      function new_class:super('func',...)
+      end
+      ]]
       function meta.__index(table,key)
         local classGet = rawget(new_class,key)
         local superGet = rawget(newinst.super,key)

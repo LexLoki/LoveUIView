@@ -1,6 +1,13 @@
+--  The MIT License (MIT)
+--  Copyright © 2016 Pietro Ribeiro Pepe.
+
+--  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+--  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+--  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 local View = require ((...):match("(.-)[^%.]+$").."class").new("View")
 
-local subViewWithPoint
+local subViewWithPoint, linkToScreen, unlinkToScreen
 
 ------------------------------------------
 -- Public functions
@@ -104,6 +111,7 @@ end
 
 function View:addSubView(view)
   table.insert(self.subViews,view)
+  linkToScreen(view,self.screen)
   view.parent = self
 end
 
@@ -125,6 +133,7 @@ function View:removeFromSuperView()
     self.parent = nil
     for i,v in pairs(p.subViews) do
       if v==self then table.remove(p.subViews,i) break end end
+    unlinkToScreen(self)
   end
 end
 
@@ -174,6 +183,15 @@ subViewWithPoint = function(self,x,y)
     else v:clearMouse() end
   end
   return resp
+end
+
+linkToScreen = function(self,screen)
+  self.screen = screen
+  for _,v in pairs(self.subViews) do linkToScreen(v,screen) end
+end
+
+unlinkToScreen = function(self)
+  linkToScreen(self,nil)
 end
 
 return View

@@ -6,45 +6,35 @@
 --  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 local path = (...):match("(.-)[^%.]+$")
-local Button = require (path.."class").extends(require (path.."ImageView"),"Button")
+local class = require (path.."class")
+local View = require (path.."View")
+
+local TextLabel = class.extends(View,"TextLabel")
 
 ------------------------------------------
 -- Public functions
 ------------------------------------------
 
-function Button.new(x,y,width,height)
-  local self = Button.newObject(x,y,width,height)
-  self.mouseOn = false
-  return self
+function TextLabel.new(x,y,width,height)
+	local self = TextLabel.newObject(x,y,width,height)
+	self.text = ''
+	self.textColor = {0,0,0}
+	self.textAlignment = 'left'
+	self.isSelected = false
+	self.blinkOn = false
+	return self
 end
 
-function Button:clearMouse()
-  self.mouseOn = false
-  self.super:clearMouse()
+function TextLabel:draw()
+	self:pre_draw()
+	self:during_draw()
+	self:pos_draw()
 end
 
-function Button:mousepressed(x,y,b)
-  if not self:sub_mousepressed(x,y,b) then
-    if b==1 then self.mouseOn = true end
-  end
+function TextLabel:during_draw()
+	self.super:during_draw()
+	love.graphics.setColor(self.textColor)
+	love.graphics.printf(self.text,0,0,self.width,self.textAlignment)
 end
 
-function Button:mousemoved(x,y,dx,dy)
-  self.mouseOn = false
-  self.super:mousemoved(x,y,dx,dy)
-end
-
-function Button:mousereleased(x,y,b)
-  if not self:sub_mousereleased(x,y,b) and self.mouseOn then self:selected() end
-  self.mouseOn = false
-end
-
-function Button:addTarget(t)
-  self.target = t
-end
-
-function Button:selected()
-  if self.target then self.target(self) end
-end
-
-return Button
+return TextLabel
