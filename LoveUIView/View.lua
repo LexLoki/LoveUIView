@@ -137,6 +137,13 @@ function View:removeFromSuperView()
   end
 end
 
+function View:maxX()
+  return self.x+self.width
+end
+function View:maxY()
+  return self.y+self.height
+end
+
 function View:draw()
   self:pre_draw()
   self:during_draw()

@@ -33,6 +33,8 @@ function Screen:setInteraction(set)
 end
 
 function Screen:mousepressed(x,y,b)
+	if self._responder ~= nil then self._responder:endResponder() end
+	self._responder = nil
 	if self.view.interactionEnabled then self.view:mousepressed(x,y,b) end
 end
 

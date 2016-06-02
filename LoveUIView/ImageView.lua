@@ -15,6 +15,7 @@ local ImageView = require (path.."class").extends(require (path.."View"),"ImageV
 function ImageView.new(x,y,width,height)
   local self = ImageView.newObject(x,y,width,height)
   self.image = nil
+  self.shouldFill = true
   return self
 end
 
@@ -29,8 +30,10 @@ function ImageView:during_draw()
   if self.image ~= nil then
     local w,h = self.image:getDimensions()
     local sx,sy = self.width/w,self.height/h
-    local s = sx<sy and sx or sy
-    love.graphics.draw(self.image,(self.width-s*w)/2,(self.height-s*h)/2,0,s,s)
+    if not self.shouldFill then
+      if sx>sy then sx = sy else sy = sx end
+    end
+    love.graphics.draw(self.image,(self.width-sx*w)/2,(self.height-sy*h)/2,0,sx,sy)
   end
 end
 

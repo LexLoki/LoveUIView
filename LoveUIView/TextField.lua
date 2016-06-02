@@ -12,7 +12,7 @@ local View = require (path.."View")
 local TextField = class.extends(View,"TextField")
 
 local keys = {space = ' '}
-local blinkTime = 0.5
+local blinkTime = 0.7
 
 ------------------------------------------
 -- Public functions
@@ -25,10 +25,11 @@ function TextField.new(x,y,width,height)
 	self.textAlignment = 'left'
 	self.isSelected = false
 	self.blinkOn = false
+	self.blinkTimer = 0
 	return self
 end
 
-function TextField:keypressed(key)
+function TextField:mousepressed(...)
 	self:becomeResponder()
 end
 
@@ -61,8 +62,6 @@ function TextField:becameResponder()
 	self.isSelected = true
 	self.blinkOn = true
 	self.blinkTimer = blinkTime
-	if self.highlightEnabled then
-	end
 end
 
 function TextField:endResponder()
@@ -90,7 +89,7 @@ function TextField:during_draw()
 	self.super:during_draw()
 	love.graphics.setColor(self.textColor)
 	local t = self.text
-	if self.isSelected and self.blinkOn then t=self.text .. '|' end
+	if self.isSelected and self.blinkOn then t=t .. '|' end
 	love.graphics.printf(t,0,0,self.width,self.textAlignment)
 end
 
