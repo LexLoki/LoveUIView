@@ -10,6 +10,35 @@
 
 local class = {}
 
+local methods = {'class','is_a','superClass','name'}
+
+local function getter(table,key,cl,isSuper)
+  isSuper = isSuper or false
+  local i,s
+  for i,s in pairs(methods) do
+    if s==key then return rawget(cl,key),'f' end
+  end
+  local inst = table
+  if not isSuper then
+    local method = rawget(inst,'_lower')
+    while method do
+      inst = method
+      method = rawget(inst,'_lower')
+    end
+  end
+  while inst do
+    method = rawget(inst:class(),key)
+    if method then return inst,type(method),method end
+    s = rawget(inst,'super')
+    if s then
+      method = rawget(s,key)
+      if method then return s,type(method),method end
+    end
+    inst = s
+  end
+  return nil
+end
+
 function class.new(name)
   local new_class = {}
   function new_class.newObject(...)
@@ -17,31 +46,49 @@ function class.new(name)
     local newinst = {}
     local meta = {}
     if sup == nil then
-      meta.__index = new_class
+      --meta.__index = new_class
     else
       newinst.super = sup.new(...)
-      --[[ Experiment
-      newinst.__super = sup.new(...)
-      newinst.super = {}
-      setmetatable(newinst.super,{__index=function(table,key)
-
-      })
-      function new_class:super('func',...)
-      end
-      ]]
-      function meta.__index(table,key)
+      rawset(newinst.super,'_lower',newinst)
+      --newinst.super._lower = newinst --*
+    end
+    function meta.__index(table,key)
+        local r,t,m,k
+        if string.sub(key,1,6) == 'super_' then
+          local inst = rawget(table,'super')
+          k = string.sub(key,7)
+          r,t,m = getter(inst,k,inst:class(),true)
+        else
+          r,t,m = getter(table,key,new_class)
+        end
+        if t == 'function' then
+          return function(instance,...)
+            return m(r,...)
+          end
+        elseif t=='f' then return r
+        elseif r then return m
+        else return nil
+        end
+        --[[ Old implementation
         local classGet = rawget(new_class,key)
         local superGet = rawget(newinst.super,key)
         return (superGet or classGet or newinst.super[key])
+        ]]
       end
+      
       function meta.__newindex(table, key, value)
+        --local tt = newinst.super
+        --tt = rawget(tt,key)
+        --[[
         if newinst.super[key] == nil or type(value) == "function" then
           rawset(table,key,value)
         else
           newinst.super[key] = value
-        end
+        end]]
+        local t = rawget(table,'super')
+        while t do table = t t = rawget(table,'super') end
+        rawset(table,key,value)
       end
-    end
     setmetatable(newinst, meta)
     return newinst
   end
@@ -51,7 +98,7 @@ function class.new(name)
     return new_class
   end
   function new_class:name()
-    return (name == nil and "unknown" or name)
+    return name or 'unkwnown'
   end
   function new_class:superClass()
     return nil
@@ -88,5 +135,7 @@ function class.extends(baseClass,name)
   end
   return new_class
 end
+
+setmetatable(class, {__call = class.new})
 
 return class

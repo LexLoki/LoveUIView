@@ -20,7 +20,7 @@ end
 
 function Button:clearMouse()
   self.mouseOn = false
-  self.super:clearMouse()
+  self:super_clearMouse()
 end
 
 function Button:mousepressed(x,y,b)
@@ -31,7 +31,7 @@ end
 
 function Button:mousemoved(x,y,dx,dy)
   self.mouseOn = false
-  self.super:mousemoved(x,y,dx,dy)
+  self:super_mousemoved(x,y,dx,dy)
 end
 
 function Button:mousereleased(x,y,b)

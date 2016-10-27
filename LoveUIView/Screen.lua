@@ -21,7 +21,18 @@ function Screen.new()
 	self.view = View.new(0,0,love.graphics.getDimensions())
 	self.view.screen = self
 	self.responder = nil
+	self._presented = nil
+	self._presenting = nil
 	return self
+end
+
+function Screen:presentScreen(scr)
+	if self._presented then self._presented:dismiss() end
+	self._presented = scr
+end
+
+function Screen:dismiss()
+	if self._presenting then self._presenting._presented = nil self._presenting = nil end
 end
 
 function Screen:update(dt)
@@ -33,20 +44,24 @@ function Screen:setInteraction(set)
 end
 
 function Screen:mousepressed(x,y,b)
+	if self._presented then self._presented:mousepressed(x,y,b) do return end end
 	if self._responder ~= nil then self._responder:endResponder() end
 	self._responder = nil
 	if self.view.interactionEnabled then self.view:mousepressed(x,y,b) end
 end
 
 function Screen:wheelmoved(x,y)
+	if self._presented then self._presented:wheelmoved(x,y) do return end end
 	if self.view.interactionEnabled then self.view:wheelmoved(x,y) end
 end
 
 function Screen:mousemoved(x,y,dx,dy)
+	if self._presented then self._presented:mousemovedd(x,y,dx,dy) do return end end
 	if self.view.interactionEnabled then self.view:mousemoved(x,y,dx,dy) end
 end
 
 function Screen:mousereleased(x,y,b)
+	if self._presented then self._presented:mousereleased(x,y,b) do return end end
 	if self.view.interactionEnabled then self.view:mousereleased(x,y,b) end
 end
 
@@ -57,6 +72,7 @@ function Screen:becomeResponder(view)
 end
 
 function Screen:keypressed(key)
+	if self._presented then self._presented:keypressed(key) do return end end
 	if self.view.interactionEnabled then
 		self.view:keypressed(key)
 		if self._responder ~= nil then

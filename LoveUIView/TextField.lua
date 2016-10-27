@@ -69,7 +69,7 @@ function TextField:endResponder()
 end
 
 function TextField:update(dt)
-	self.super:update(dt)
+	self:super_update(dt)
 	if self.isSelected then
 		self.blinkTimer = self.blinkTimer-dt
 		if self.blinkTimer<0 then
@@ -79,14 +79,8 @@ function TextField:update(dt)
 	end
 end
 
-function TextField:draw()
-	self:pre_draw()
-	self:during_draw()
-	self:pos_draw()
-end
-
 function TextField:during_draw()
-	self.super:during_draw()
+	self:super_during_draw()
 	love.graphics.setColor(self.textColor)
 	local t = self.text
 	if self.isSelected and self.blinkOn then t=t .. '|' end

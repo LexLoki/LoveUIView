@@ -33,7 +33,7 @@ function ListView:mousepressed(x,y,b)
 end
 
 function ListView:mousemoved(x,y,dx,dy)
-	if not self.super:mousemoved(x,y,dx,dy) and self.isDragging then
+	if not self:super_mousemoved(x,y,dx,dy) and self.isDragging then
 		-- Scroll action
 	end
 end

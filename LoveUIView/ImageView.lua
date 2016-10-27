@@ -19,14 +19,9 @@ function ImageView.new(x,y,width,height)
   return self
 end
 
-function ImageView:draw()
-  self:pre_draw()
-  self:during_draw()
-  self:pos_draw()
-end
-
 function ImageView:during_draw()
-  self.super:during_draw()
+  self:super_during_draw()
+  print('cmon')
   if self.image ~= nil then
     local w,h = self.image:getDimensions()
     local sx,sy = self.width/w,self.height/h
