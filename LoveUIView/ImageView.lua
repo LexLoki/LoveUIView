@@ -21,7 +21,6 @@ end
 
 function ImageView:during_draw()
   self:super_during_draw()
-  print('cmon')
   if self.image ~= nil then
     local w,h = self.image:getDimensions()
     local sx,sy = self.width/w,self.height/h
