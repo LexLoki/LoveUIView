@@ -5,12 +5,18 @@
 --  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 --  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
--- Script to simulate class and inheritance in Lua
--- Version 2.1 - 2016/05/14
+-- Script to simulate class, with inheritance and polymorphism, in Lua
+-- Version 2.2
 
 local class = {}
 
 local methods = {'class','is_a','superClass','name'}
+
+local function eq(t1,t2)
+  local g1,g2 = rawget(t1,'_lower'),rawget(t2,'_lower')
+  if not g1 and not g2 then return false end
+  return (g1 or t1)==(g2 or t2)
+end
 
 local function getter(table,key,cl,isSuper)
   isSuper = isSuper or false
@@ -89,6 +95,7 @@ function class.new(name)
         while t do table = t t = rawget(table,'super') end
         rawset(table,key,value)
       end
+      meta.__eq = eq
     setmetatable(newinst, meta)
     return newinst
   end
@@ -136,6 +143,6 @@ function class.extends(baseClass,name)
   return new_class
 end
 
-setmetatable(class, {__call = class.new})
+setmetatable(class, {__call = function(t,...) return class.new(...) end})
 
 return class
