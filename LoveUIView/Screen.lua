@@ -26,6 +26,11 @@ function Screen.new()
 	return self
 end
 
+function Screen:resize(w,h)
+	local w,h = love.graphics.getDimensions()
+	self.view:resize(w/self.view.width,h/self.view.height)
+end
+
 function Screen:presentScreen(scr)
 	if self._presented then self._presented:dismiss() end
 	self._presented = scr

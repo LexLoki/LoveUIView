@@ -15,7 +15,7 @@ local ImageView = require (path.."class").extends(require (path.."View"),"ImageV
 function ImageView.new(x,y,width,height)
   local self = ImageView.newObject(x,y,width,height)
   self.image = nil
-  self.shouldFill = true
+  self.shouldFill = false
   return self
 end
 

@@ -21,7 +21,7 @@ function View.new(x,y,width,height)
   self.height = height
   self.subViews = {}
   self.backgroundColor = {255,255,255}
-  self.borderColor = {0,0,0}
+  self.borderColor = {0,0,0,0}
   self.borderWidth = 1
   self.borderRadius = {0,0}
   self.mouse_over = false
@@ -103,6 +103,17 @@ function View:sub_wheelmoved(dx,dy,x,y)
     return true
   end
   return false
+end
+
+function View:resize(rw,rh,rec)
+  rec = rec or true
+  self.width = self.width * rw
+  self.height = self.height * rh
+  self.x = self.x * rw
+  self.y = self.y * rh
+  if rec then
+    for i,v in pairs(self.subViews) do v:resize(rw,rh,rec) end
+  end
 end
 
 function View:keypressed(key)

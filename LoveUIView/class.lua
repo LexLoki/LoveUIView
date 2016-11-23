@@ -7,8 +7,9 @@
 
 -- Script to simulate class, with inheritance and polymorphism, in Lua
 -- Version 2.2
+-- github.com/LexLoki/luaclass
 
-local class = {}
+local luaclass = {}
 
 local methods = {'class','is_a','superClass','name'}
 
@@ -34,18 +35,18 @@ local function getter(table,key,cl,isSuper)
   end
   while inst do
     method = rawget(inst:class(),key)
-    if method then return inst,type(method),method end
+    if method ~= nil then return inst,type(method),method end
     s = rawget(inst,'super')
     if s then
       method = rawget(s,key)
-      if method then return s,type(method),method end
+      if method ~= nil then return s,type(method),method end
     end
     inst = s
   end
   return nil
 end
 
-function class.new(name)
+function luaclass.new(name)
   local new_class = {}
   function new_class.newObject(...)
     local sup = new_class:superClass()
@@ -132,8 +133,8 @@ function class.new(name)
   return new_class
 end
 
-function class.extends(baseClass,name)
-  local new_class = class.new(name)
+function luaclass.extends(baseClass,name)
+  local new_class = luaclass.new(name)
   if baseClass~=nil then
     setmetatable(new_class,{__index=baseClass})
     function new_class:superClass()
@@ -143,6 +144,6 @@ function class.extends(baseClass,name)
   return new_class
 end
 
-setmetatable(class, {__call = function(t,...) return class.new(...) end})
+setmetatable(luaclass, {__call = function(t,...) return luaclass.new(...) end})
 
-return class
+return luaclass
