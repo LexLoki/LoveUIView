@@ -17,7 +17,7 @@ local classes = {
 	'TextField',
 	'ListView',
 	'TextLabel',
-  'ScreenTransition'
+  	'ScreenTransition'
 }
 
 local LoveUIView = {

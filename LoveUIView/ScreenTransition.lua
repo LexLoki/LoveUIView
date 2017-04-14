@@ -12,13 +12,13 @@ local ScreenTransition = require ((...):match("(.-)[^%.]+$").."class").new("Scre
 function ScreenTransition.new(fromScreen, toScreen, time, callback)
 	local self = ScreenTransition.newObject()
 	self.screens = {fromScreen,toScreen}
-  self.fromScreen = fromScreen
-  self.toScreen = toScreen
+  	self.fromScreen = fromScreen
+  	self.toScreen = toScreen
 	fromScreen:setInteraction(false)
 	toScreen:setInteraction(false)
 	toScreen.view.x = love.graphics.getWidth()
 	self.speed = -toScreen.view.x/time
-  self.callback = callback
+  	self.callback = callback
 	return self
 end
 
