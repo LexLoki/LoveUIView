@@ -7,6 +7,7 @@
 
 local path = (...):match("(.-)[^%.]+$")
 local ImageView = require (path.."class").extends(require (path.."View"),"ImageView")
+path = nil
 
 ------------------------------------------
 -- Public functions

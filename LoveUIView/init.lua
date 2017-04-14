@@ -29,4 +29,7 @@ for i=#classes,1,-1 do
 	LoveUIView[key] = require(path..key)
 end
 
+path = nil
+classes = nil
+
 return LoveUIView

@@ -8,6 +8,7 @@
 local path = (...):match("(.-)[^%.]+$")
 local class = require (path.."class")
 local View = require (path.."View")
+path = nil
 
 local TextLabel = class.extends(View,"TextLabel")
 

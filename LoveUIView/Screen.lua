@@ -9,6 +9,7 @@ local path = (...):match("(.-)[^%.]+$")
 local View = require (path.."View")
 
 local Screen = require (path.."class").new("Screen")
+path = nil
 
 local searchView
 
