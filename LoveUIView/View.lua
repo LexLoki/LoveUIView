@@ -26,11 +26,14 @@ function View.new(x,y,width,height)
   self.borderRadius = {0,0}
   self.mouse_over = false
   self.interactionEnabled = true
+  self.pivot = {0,0}
   return self
 end
 
 function View:update(dt)
-  for _,v in pairs(self.subViews) do v:update(dt) end
+  for i=1,#self.subViews do
+    self.subViews[i]:update(dt)
+  end
 end
 
 function View:setInteraction(set)
@@ -42,7 +45,9 @@ end
 
 function View:clearMouse()
   self.mouse_over = false
-  for i,v in pairs(self.subViews) do v:clearMouse() end
+  for i=1,#self.subViews do
+    self.subViews[i]:clearMouse()
+  end
 end
 
 function View:mousepressed(x,y,b)
@@ -112,12 +117,16 @@ function View:resize(rw,rh,rec)
   self.x = self.x * rw
   self.y = self.y * rh
   if rec then
-    for i,v in pairs(self.subViews) do v:resize(rw,rh,rec) end
+    for i=1,#self.subViews do
+      self.subViews[i]:resize(rw,rh,rec)
+    end
   end
 end
 
 function View:keypressed(key)
-  for i,v in pairs(self.subViews) do v:keypressed(key) end
+  for i=1,#self.subViews do
+    self.subViews[i]:keypressed(key)
+  end
 end
 
 function View:addSubView(view)
@@ -129,9 +138,23 @@ end
 function View:bringToFront()
   if self.parent then
     local subs = self.parent.subViews
-    for i,v in pairs(subs) do
-      if v==self then
+    local v
+    for i=1,#self.subViews do
+      if self.subViews[i]==self then
         table.insert(subs,table.remove(subs,i))
+        break
+      end
+    end
+  end
+end
+
+function View:bringToBack()
+  if self.parent then
+    local subs = self.parent.subViews
+    local v
+    for i=1,#self.subViews do
+      if self.subViews[i]==self then
+        table.insert(subs,1,table.remove(subs,i))
         break
       end
     end
@@ -148,11 +171,23 @@ function View:removeFromSuperView()
   end
 end
 
+function View:minX()
+  return self.x+self.width*(-self.pivot[1])
+end
+function View:minY()
+  return self.y+self.height*(-self.pivot[2])
+end
+function View:midX()
+  return self.x+self.width*(0.5-self.pivot[1])
+end
+function View:midY()
+  return self.y+self.height*(0.5-self.pivot[2])
+end
 function View:maxX()
-  return self.x+self.width
+  return self.x+self.width*(1-self.pivot[1])
 end
 function View:maxY()
-  return self.y+self.height
+  return self.y+self.height*(1-self.pivot[2])
 end
 
 function View:draw()
@@ -168,9 +203,9 @@ end
 
 function View:during_draw()
   love.graphics.setColor(self.backgroundColor)
-  love.graphics.rectangle("fill",0,0,self.width,self.height,self.borderRadius[1],self.borderRadius[2])
+  love.graphics.rectangle("fill",-self.pivot[1]*self.width,-self.pivot[2]*self.height,self.width,self.height,self.borderRadius[1],self.borderRadius[2])
   love.graphics.setColor(255,255,255)
-  for i,v in ipairs(self.subViews) do v:draw() end
+  for i=1,#self.subViews do self.subViews[i]:draw() end
 end
 
 function View:pos_draw()
@@ -182,7 +217,7 @@ function View:pos_draw()
 end
 
 function View:containsPoint(x,y)
-  return self.x<x and x<self.x+self.width and self.y<y and y<self.y+self.height
+  return self:minX()<x and x<self:maxX() and self:minY()<y and y<self:maxY()
 end
 
 function View:convertPoint(x,y)
@@ -195,7 +230,9 @@ end
 subViewWithPoint = function(self,x,y)
   self.mouse_over = true
   local resp = nil
-  for i,v in ipairs(self.subViews) do
+  local v
+  for i=1,#self.subViews do
+    v = self.subViews[i]
     if v:containsPoint(x,y) then 
       if v.interactionEnabled then resp = v end
     else v:clearMouse() end
@@ -205,7 +242,9 @@ end
 
 linkToScreen = function(self,screen)
   self.screen = screen
-  for _,v in pairs(self.subViews) do linkToScreen(v,screen) end
+  for i=1,#self.subViews do
+    linkToScreen(self.subViews[i],screen)
+  end
 end
 
 unlinkToScreen = function(self)
