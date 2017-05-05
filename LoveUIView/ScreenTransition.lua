@@ -14,12 +14,18 @@ function ScreenTransition.new(fromScreen, toScreen, time, callback)
 	self.screens = {fromScreen,toScreen}
   	self.fromScreen = fromScreen
   	self.toScreen = toScreen
+  	self.speed = 0
+  	self.callback = callback
+	return self
+end
+
+function ScreenTransition:start()
 	fromScreen:setInteraction(false)
 	toScreen:setInteraction(false)
 	toScreen.view.x = love.graphics.getWidth()
 	self.speed = -toScreen.view.x/time
-  	self.callback = callback
-	return self
+	self.fromScreen:willTransitionFrom()
+	self.toScreen:willTransitionTo()
 end
 
 function ScreenTransition:update(dt)
@@ -28,7 +34,11 @@ function ScreenTransition:update(dt)
 	if self.toScreen.view.x < 0 then
 		self.toScreen.view.x = 0
 		self.toScreen.setInteraction(true)
-		self.callback()
+		if self.callback then
+			self.callback()
+		end
+		self.fromScreen:didTransitionFrom()
+		self.toScreen:didTransitionTo()
 	end
 end
 

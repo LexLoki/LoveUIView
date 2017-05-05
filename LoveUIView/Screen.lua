@@ -114,6 +114,18 @@ function Screen:draw()
 	self.view:draw()
 end
 
+function Screen:willTransitionTo()
+end
+
+function Screen:willTransitionFrom()
+end
+
+function Screen:didTransitionTo()
+end
+
+function Screen:didTransitionFrom()
+end
+
 ------------------------------------------
 -- Private functions
 ------------------------------------------
