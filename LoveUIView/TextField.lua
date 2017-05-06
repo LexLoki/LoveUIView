@@ -85,7 +85,7 @@ function TextField:during_draw()
 	love.graphics.setColor(self.textColor)
 	local t = self.text
 	if self.isSelected and self.blinkOn then t=t .. '|' end
-	love.graphics.printf(t,0,0,self.width,self.textAlignment)
+	love.graphics.printf(t,-self.pivot[1]*self.width,-self.pivot[2]*self.height,self.width,self.textAlignment)
 end
 
 return TextField

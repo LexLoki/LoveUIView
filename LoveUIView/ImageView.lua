@@ -9,6 +9,15 @@ local path = (...):match("(.-)[^%.]+$")
 local ImageView = require (path.."class").extends(require (path.."View"),"ImageView")
 path = nil
 
+local types = {
+  aspectFill = 1,
+  aspectFit = 1,
+  fill = 1,
+  noScale = 1
+}
+
+local getScale
+
 ------------------------------------------
 -- Public functions
 ------------------------------------------
@@ -16,7 +25,7 @@ path = nil
 function ImageView.new(x,y,width,height)
   local self = ImageView.newObject(x,y,width,height)
   self.image = nil
-  self.shouldFill = false
+  self.drawMode = 'aspectFit'
   return self
 end
 
@@ -24,12 +33,32 @@ function ImageView:during_draw()
   self:super_during_draw()
   if self.image ~= nil then
     local w,h = self.image:getDimensions()
-    local sx,sy = self.width/w,self.height/h
-    if not self.shouldFill then
-      if sx>sy then sx = sy else sy = sx end
-    end
-    love.graphics.draw(self.image,(self.width-sx*w)/2,(self.height-sy*h)/2,0,sx,sy)
+    local sx,sy = types[self.drawMode](self,w,h)
+    love.graphics.draw(self.image,(0.5-self.pivot[1])*self.width,(0.5-self.pivot[2])*self.height,0,sx,sy,w/2,h/2)
   end
+end
+
+------------------------------------------
+-- Private functions
+------------------------------------------
+function getScale(self,w,h)
+  return self.width/w,self.height/h
+end
+
+function types.aspectFill(...)
+  local sx,sy = getScale(...)
+  return math.max(sx,sy)
+end
+function types.aspectFit(...)
+  local sx,sy = getScale(...)
+  return math.min(sx,sy)
+end
+function types.fill(...)
+  local sx,sy = getScale(...)
+  return sx,sy
+end
+function types.noScale(...)
+  return 1,1
 end
 
 return ImageView
