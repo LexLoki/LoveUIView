@@ -6,7 +6,7 @@
 --  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 -- Script to simulate class, with inheritance and polymorphism, in Lua
--- Version 2.2
+-- Version 2.3
 -- github.com/LexLoki/luaclass
 
 local luaclass = {}
@@ -14,9 +14,17 @@ local luaclass = {}
 local methods = {'class','is_a','superClass','name'}
 
 local function eq(t1,t2)
-  local g1,g2 = rawget(t1,'_lower'),rawget(t2,'_lower')
-  if not g1 and not g2 then return false end
-  return (g1 or t1)==(g2 or t2)
+  local s = rawget(t1,'_lower')
+  while s do
+    t1 = s
+    s = rawget(t1,'_lower')
+  end
+  local s = rawget(t2,'_lower')
+  while s do
+    t2 = s
+    s = rawget(t2,'_lower')
+  end
+  return rawequal(t1, t2)
 end
 
 local function getter(table,key,cl,isSuper)
@@ -35,11 +43,11 @@ local function getter(table,key,cl,isSuper)
   end
   while inst do
     method = rawget(inst:class(),key)
-    if method ~= nil then return inst,type(method),method end
+    if method ~= nil then return inst,type(method),method,false end
     s = rawget(inst,'super')
     if s then
       method = rawget(s,key)
-      if method ~= nil then return s,type(method),method end
+      if method ~= nil then return s,type(method),method,true end
     end
     inst = s
   end
@@ -66,11 +74,15 @@ function luaclass.new(name)
           k = string.sub(key,7)
           r,t,m = getter(inst,k,inst:class(),true)
         else
-          r,t,m = getter(table,key,new_class)
+          r,t,m,ii = getter(table,key,new_class)
         end
         if t == 'function' then
-          return function(instance,...)
-            return m(r,...)
+          if ii then
+            return m
+          else
+            return function(instance,...)
+              return m(r,...)
+            end
           end
         elseif t=='f' then return r
         elseif r then return m
