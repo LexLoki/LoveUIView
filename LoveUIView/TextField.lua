@@ -80,8 +80,8 @@ function TextField:update(dt)
 	end
 end
 
-function TextField:during_draw()
-	self:super_during_draw()
+function TextField:draw_content()
+	self:super_draw_content()
 	love.graphics.setColor(self.textColor)
 	local t = self.text
 	if self.isSelected and self.blinkOn then t=t .. '|' end

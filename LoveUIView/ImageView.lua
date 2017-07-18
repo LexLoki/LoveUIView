@@ -29,8 +29,8 @@ function ImageView.new(x,y,width,height)
   return self
 end
 
-function ImageView:during_draw()
-  self:super_during_draw()
+function ImageView:draw_content()
+  self:super_draw_content()
   if self.image ~= nil then
     local w,h = self.image:getDimensions()
     local sx,sy = types[self.drawMode](self,w,h)

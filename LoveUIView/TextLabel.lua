@@ -26,8 +26,8 @@ function TextLabel.new(x,y,width,height)
 	return self
 end
 
-function TextLabel:during_draw()
-	self:super_during_draw()
+function TextLabel:draw_content()
+	self:super_draw_content()
 	love.graphics.setColor(self.textColor)
 	love.graphics.printf(self.text,-self.pivot[1]*self.width,-self.pivot[2]*self.height,self.width,self.textAlignment)
 end

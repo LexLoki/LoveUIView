@@ -201,14 +201,18 @@ function View:pre_draw()
   love.graphics.translate(self.x,self.y)
 end
 
-function View:during_draw()
+function View:draw_content()
   love.graphics.setColor(self.backgroundColor)
   love.graphics.rectangle("fill",-self.pivot[1]*self.width,-self.pivot[2]*self.height,self.width,self.height,self.borderRadius[1],self.borderRadius[2])
   love.graphics.setColor(255,255,255)
 end
 
-function View:pos_draw()
+function View:during_draw()
+  self:draw_content()
   for i=1,#self.subViews do self.subViews[i]:draw() end
+end
+
+function View:pos_draw()
   love.graphics.setColor(self.borderColor)
   love.graphics.setLineWidth(self.borderWidth)
   love.graphics.rectangle("line",0,0,self.width,self.height)
